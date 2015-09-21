@@ -1,0 +1,130 @@
+<script type="text/javascript">
+    $(document).ready(function (){
+        $('.change-api').click(function(){
+            $("#setting-api").removeClass('hidden');
+        });
+        $('#close-mc-api-form').click(function(){
+            $("#setting-api").addClass('hidden');
+        });
+
+        $(".change-permission").click(function(){
+        	$(".update-permission").removeClass('hidden');
+        });
+
+        $('#close-permission-form').click(function(){
+            $(".update-permission").addClass('hidden');
+        });
+
+	    $('#get-list').click(function (e) {
+	        e.preventDefault();
+	        var keyVal = $("#mc_key_key").val();
+	        // alert(keyVal);
+	        var origin = window.location.origin;
+	        window.location.href = origin + '/mc_keys/load_list?key=' + keyVal;
+	    });
+     });
+</script>
+<style>
+	.div-setting{
+   width: 53%;
+   margin-left: 18%;
+
+	}
+</style>
+
+<%- model_class = McKey -%>
+<div class="alert alert-success page-header div-setting">
+  <h4>API Settings</h4>
+</div>
+
+<div class="well div-setting">
+  <h5>MailChimp API</h5>
+  <div class="alert alert-success">
+    <b>Key:</b><%= @mc_key.key %>
+    <br/>
+    <b>List:</b><%= @mc_key.list_name%>
+  	<div class="pull-right">
+ 	   <a href="javascript:void(0);" class="change-api">change</a>
+ 	 </div>
+  </div>
+
+  <div id="setting-api" class=
+  	<% if @listloaded.present? %>
+  	"row-fluid"
+  	<% else %>
+  	  "hidden row-fluid"
+    <% end%>>
+  	<a id="close-mc-api-form" class="icon-remove pull-right"></a>
+  	<%= simple_form_for @mc_key, :html => { :class => 'form-horizontal' } do |f| %>
+	  <div class="control-group">
+	    <div class="controls">
+	 		<%= f.input :key %>
+		</div>
+	  </div>
+	    <% if @listloaded %>
+	        <div class="control-group">
+	            <div class="controls">
+	                <label>Select List</label>
+	                    <%= f.select :list, [['Select List', '']].concat(@listloaded.inject([]) {|arr, e| arr <<  [e["name"],e["id"]]}) %>
+	            </div>
+	        </div>
+
+	        <!-- <div class="form-actions"> -->
+			    <%= f.button :submit, :class => 'btn btn-primary pull-right' %>
+			    <%#= link_to t('.cancel', :default => t("helpers.links.cancel")),
+			                mc_keys_path, :class => 'btn' %>
+			<!-- </div> -->
+		<% else %>
+		  <input type="button" id="get-list" value="Get List" class="btn btn-primary btn-mini pull-right" >
+	    <% end %>
+	<% end %>
+  </div>
+</div>
+
+<!-- ========= webhook URL ========================== -->
+<div class="well div-setting">
+	<h5>Webhook URL</h5>
+	<% if !@webhook.new_record? %>
+	<div class="alert alert-success">
+		<b>Webhook URL</b>(Copy this URL on your MailChimp webhook page):<br/>
+		<%= @webhook.url %>
+	</div>
+	<% else %>
+	    <%= simple_form_for @webhook, :html => { :class => 'form-horizontal' } do |f| %>
+		  <div class="control-group">
+		    <div class="controls">
+		 		<%= f.input :url,:placeholder=>"Webhook URL" %>
+			</div>
+		  <%= f.button :submit, :class => 'btn btn-primary' %>
+		  </div>
+		<% end %>
+	<% end %>
+</div>
+
+
+<!-- ===============  Re subscriber option ============================ -->
+<div class="well div-setting">
+	<h5>Re-Subscibe</h5>
+	<% if @resubscribe.new_record? %>
+			<%= form_for @resubscribe, :html => { :class => 'form-horizontal' } do |f| %>
+			    <%= f.label "Re_Subscribe?" %>
+			    <%= f.select(:re_subscribe, OPTION_CONSTANT::OPTION_TYPE ) %>
+			    <%= f.submit :submit, :class => 'btn btn-primary btn-mini', :value => "Submit" %>
+			<% end %>
+	<% else %>
+		<div class="alert alert-success ">
+			<b>Re_Subscribe? :</b><%= @resubscribe.re_subscribe %>
+			<div class="pull-right">
+		 	   <a href="javascript:void(0);" class="change-permission">change</a>
+		 	</div>
+		</div>
+		<div class="update-permission hidden">
+			<a id="close-permission-form" class="icon-remove pull-right"></a>
+		 	<%= form_for @resubscribe, :html => { :class => 'form-horizontal' } do |f| %>
+			    <%= f.label "Re_Subscribe?" %>
+			    <%= f.select(:re_subscribe, OPTION_CONSTANT::OPTION_TYPE) %>
+			    <%= f.submit :submit, :class => 'btn btn-primary btn-mini', :value => "Update" %>
+			<% end %>	
+		</div>
+	<% end %>
+</div>

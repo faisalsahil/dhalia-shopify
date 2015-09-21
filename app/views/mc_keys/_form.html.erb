@@ -1,0 +1,39 @@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#get-list').click(function (e) {
+            e.preventDefault();
+            var keyVal = $("#mc_key_key").val();
+            // alert(keyVal);
+            var origin = window.location.origin;
+            window.location.href = origin + '/mc_keys/load_list?key=' + keyVal;
+        });
+    });
+</script>
+
+<%= form_for @mc_key, :html => { :class => 'form-horizontal' } do |f| %>
+  <div class="control-group">
+    <div class="controls">
+  		<% if @key.present? %>
+ 			<%=f.text_field :key, :value => @key %>
+  		<% else %>
+ 			<%=f.text_field :key, :placeholder=> "Enter API key" %>
+		<% end %>
+	</div>
+  </div>
+    <% if @listloaded %>
+        <div class="control-group">
+            <div class="controls">
+                <label>Select List</label>
+                    <%= f.select :list, [['Select List', '']].concat(@listloaded.inject([]) {|arr, e| arr <<  [e["name"],e["id"]]}) %>
+            </div>
+        </div>
+
+        <div class="form-actions">
+		    <%= f.button :submit, :class => 'btn btn-primary' %>
+		    <%= link_to t('.cancel', :default => t("helpers.links.cancel")),
+		                mc_keys_path, :class => 'btn' %>
+		</div>
+	<% else %>
+	  <input type="button" id="get-list" value="Get List" class="btn btn-primary btn-mini" >
+    <% end %>
+<% end %>
